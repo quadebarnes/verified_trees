@@ -52,3 +52,19 @@ Fixpoint insert (t : tree) (newTree : tree) : tree :=
 Example test_insert1: insert (node 1 [(node 3 [(node 14 nil)]);(node 7 nil);(node 9 nil)]) (node 27 nil) 
   = (node 1 [(node 3 [(node 14 [(node 27 nil)])]);(node 7 nil);(node 9 nil)]).
 Proof. reflexivity. Qed.
+
+Fixpoint map_tree (t : tree) (f : nat -> nat) : tree :=
+  match t with
+  | node label branches => node (f label) ((fix map_list (l : list tree) (func : nat -> nat) : list tree :=
+                                            match l with
+                                            | nil => nil
+                                            | h::t => (map_tree h func)::(map_list t func)
+                                            end) branches f)
+  end.
+
+Definition double (n : nat) : nat := 
+  n + n.
+
+Example test_map_tree: map_tree (node 1 [(node 3 [(node 14 nil)]);(node 7 nil);(node 9 nil)]) double 
+  = (node 2 [(node 6 [(node 28 nil)]);(node 14 nil);(node 18 nil)]).
+Proof. reflexivity. Qed.
