@@ -68,3 +68,16 @@ Definition double (n : nat) : nat :=
 Example test_map_tree: map_tree (node 1 [(node 3 [(node 14 nil)]);(node 7 nil);(node 9 nil)]) double 
   = (node 2 [(node 6 [(node 28 nil)]);(node 14 nil);(node 18 nil)]).
 Proof. reflexivity. Qed.
+
+Fixpoint fold (t : tree) (f : nat -> nat -> nat) (seed : nat) :=
+  match t with 
+  | node label branches => f label ((fix fold_list (l : list tree) (func : nat -> nat -> nat) (sd : nat) :=
+                                           match l with
+                                           | nil => sd
+                                           | h::t => f (fold h f sd) (fold_list t f sd)
+                                           end) branches f seed)
+  end.
+
+Example test_fold1: fold (node 1 [(node 3 [(node 14 nil)]);(node 7 nil);(node 9 nil)]) (fun a b => a + b) 0 
+  = 34.
+Proof. reflexivity. Qed.
