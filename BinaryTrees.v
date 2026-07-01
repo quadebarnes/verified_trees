@@ -40,3 +40,15 @@ Fixpoint find (t : tree) (target : nat) : option tree :=
 Example test_find1: find (node 1 [(node 3 [(node 14 nil)]);(node 7 nil);(node 9 nil)]) 3 
   = Some (node 3 [(node 14 nil)]).
 Proof. reflexivity. Qed.
+
+Fixpoint insert (t : tree) (newTree : tree) : tree :=
+  match t with
+  | node label branches => match branches with
+                           | nil => node label [newTree]
+                           | h::t => node label ((insert h newTree)::t)
+                           end
+  end.
+
+Example test_insert1: insert (node 1 [(node 3 [(node 14 nil)]);(node 7 nil);(node 9 nil)]) (node 27 nil) 
+  = (node 1 [(node 3 [(node 14 [(node 27 nil)])]);(node 7 nil);(node 9 nil)]).
+Proof. reflexivity. Qed.
