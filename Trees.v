@@ -81,3 +81,21 @@ Fixpoint fold (t : tree) (f : nat -> nat -> nat) (seed : nat) :=
 Example test_fold1: fold (node 1 [(node 3 [(node 14 nil)]);(node 7 nil);(node 9 nil)]) (fun a b => a + b) 0 
   = 34.
 Proof. reflexivity. Qed.
+
+Fixpoint size (t : tree) : nat :=
+  match t with
+  | node _ branches => S ((fix size_list (l : list tree) :=
+                             match l with
+                             | nil => O
+                             | h::t => (size h) + (size_list t)
+                             end) branches)
+  end.
+
+Example test_size: size (node 1 [(node 3 [(node 14 nil)]);(node 7 nil);(node 9 nil)])
+  = 5.
+Proof. reflexivity. Qed.
+
+Theorem map_double: forall (t : tree), 
+  size (map_tree t double) = size t.
+
+
