@@ -95,14 +95,6 @@ Example test_size: size (node 1 [(node 3 [(node 14 nil)]);(node 7 nil);(node 9 n
   = 5.
 Proof. reflexivity. Qed.
 
-(* Theorem map_double: forall (t : tree), 
-  size (map_tree t double) = size t.
-Proof.
-  intros t. destruct t. induction branches as [| st rest' bs_ind'].
-  - simpl. reflexivity.
-  - simpl. intro 
-Qed. *)
-
 Fixpoint tree_ind' (P : tree -> Prop)
   (H : forall l br, Forall P br -> P (node l br))
   (t : tree) : P t := 
@@ -141,8 +133,19 @@ Proof.
   intros t. induction t using tree_ind'. induction H as [| head rest Hhead Htail Ih].
   - simpl. rewrite Nat.add_0_r. rewrite Nat.add_0_r. reflexivity.
   - simpl in *. rewrite Nat.add_shuffle3. 
-  rewrite double_distr. rewrite double_distr.
-  rewrite double_distr in Ih. rewrite Ih. rewrite Nat.add_shuffle3. 
-  rewrite Hhead.
-  reflexivity.
+    rewrite double_distr. rewrite double_distr.
+    rewrite double_distr in Ih. rewrite Ih. rewrite Nat.add_shuffle3. 
+    rewrite Hhead.
+    reflexivity.
+Qed.
+
+Theorem map_double: forall (t : tree), 
+  size (map_tree t double) = size t.
+Proof.
+  intros t. induction t using tree_ind'. induction H as [| head rest Hhead Htail Ih].
+  - simpl. reflexivity.
+  - simpl in *. rewrite <- Nat.add_succ_l. rewrite Nat.add_succ_comm.
+    rewrite Ih. rewrite Hhead.
+    rewrite Nat.add_succ_r. 
+    reflexivity. 
 Qed.
