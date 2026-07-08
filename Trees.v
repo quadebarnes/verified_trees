@@ -95,7 +95,54 @@ Example test_size: size (node 1 [(node 3 [(node 14 nil)]);(node 7 nil);(node 9 n
   = 5.
 Proof. reflexivity. Qed.
 
-Theorem map_double: forall (t : tree), 
+(* Theorem map_double: forall (t : tree), 
   size (map_tree t double) = size t.
+Proof.
+  intros t. destruct t. induction branches as [| st rest' bs_ind'].
+  - simpl. reflexivity.
+  - simpl. intro 
+Qed. *)
 
+Fixpoint tree_ind' (P : tree -> Prop)
+  (H : forall l br, Forall P br -> P (node l br))
+  (t : tree) : P t := 
+  match t with
+  | node l br => H l br ((fix children (bs : list tree) : Forall P bs := 
+                    match bs with
+                    | [] => Forall_nil P
+                    | h::t => Forall_cons h (tree_ind' P H h) (children t)
+                    end) br)
+  end.
 
+Lemma double_plus_one: forall (n : nat), 
+  double (S n) = S (S (double n)).
+Proof. 
+  intros n. induction n as [| n' IHn'].
+  + unfold double. simpl. reflexivity.
+  + rewrite IHn'. unfold double. 
+    rewrite Nat.add_succ_r. rewrite Nat.add_succ_r. 
+    rewrite Nat.add_succ_l. rewrite Nat.add_succ_l. 
+    reflexivity.
+Qed. 
+
+Lemma double_distr: forall (n m : nat), double (n + m) 
+  = double n + double m.
+Proof.
+  intros n. induction n as [| n' IHn'].
+  - simpl. reflexivity.
+  - intros m. rewrite double_plus_one. simpl. rewrite <- IHn'.
+    rewrite double_plus_one. 
+    reflexivity.
+Qed.
+
+Theorem double_sum: forall (t : tree), 
+  double (fold t plus 0) = fold (map_tree t double) plus 0.
+Proof. 
+  intros t. induction t using tree_ind'. induction H as [| head rest Hhead Htail Ih].
+  - simpl. rewrite Nat.add_0_r. rewrite Nat.add_0_r. reflexivity.
+  - simpl in *. rewrite Nat.add_shuffle3. 
+  rewrite double_distr. rewrite double_distr.
+  rewrite double_distr in Ih. rewrite Ih. rewrite Nat.add_shuffle3. 
+  rewrite Hhead.
+  reflexivity.
+Qed.
