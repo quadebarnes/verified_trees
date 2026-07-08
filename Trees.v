@@ -149,3 +149,14 @@ Proof.
     rewrite Nat.add_succ_r. 
     reflexivity. 
 Qed.
+
+Theorem map_size: forall (t : tree) (f : nat -> nat), 
+  size (map_tree t f) = size t.
+Proof. 
+  intros t f. induction t using tree_ind'. induction H as [| head rest Hhead Htail Ih].
+  - simpl. reflexivity.
+  - simpl in *. rewrite <- Nat.add_succ_l. rewrite Nat.add_succ_comm.
+    rewrite Ih. rewrite Hhead.
+    rewrite Nat.add_succ_r.
+    reflexivity.
+Qed. 
