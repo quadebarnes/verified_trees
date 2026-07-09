@@ -160,3 +160,16 @@ Proof.
     rewrite Nat.add_succ_r.
     reflexivity.
 Qed. 
+
+Theorem insert_size: forall (t nt : tree), 
+  size (insert t nt) = size t + size nt.
+Proof.
+  intros t nt. induction t using tree_ind'. induction H as [| head rest Hhead Htail Ih].
+  - simpl. rewrite Nat.add_0_r. reflexivity.
+  - simpl in *. induction nt using tree_ind'. 
+    induction H as [| ntHead ntRest ntHhead ntHtail ntIh].
+    + simpl in *. rewrite Hhead. 
+      rewrite Nat.add_shuffle0. reflexivity. 
+    + rewrite Hhead. rewrite Nat.add_shuffle0.
+      reflexivity.
+Qed.
