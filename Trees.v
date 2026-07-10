@@ -169,7 +169,23 @@ Proof.
   - simpl in *. induction nt using tree_ind'. 
     induction H as [| ntHead ntRest ntHhead ntHtail ntIh].
     + simpl in *. rewrite Hhead. 
-      rewrite Nat.add_shuffle0. reflexivity. 
+      rewrite Nat.add_shuffle0. 
+      reflexivity. 
     + rewrite Hhead. rewrite Nat.add_shuffle0.
       reflexivity.
+Qed.
+
+Theorem find_insertion: forall (t: tree) (n : nat),
+  find t n = None -> 
+  find (insert t (node n [])) n = Some (node n []).
+Proof. 
+  intros t n H. induction t using tree_ind'. induction H0 as [| head rest Hhead Htail Ih].
+  - simpl in *. destruct (l =? n) eqn:eq1 in H.
+    + discriminate H.
+    + rewrite eq1. rewrite Nat.eqb_refl. reflexivity.
+  - simpl. simpl in H. destruct (l =? n) eqn:eq1 in H.
+    + discriminate H.
+    + rewrite eq1. simpl in Ih. rewrite eq1 in Ih. rewrite Hhead.
+      * reflexivity.
+      * destruct (find head n) eqn:eq2. discriminate. reflexivity.
 Qed.
